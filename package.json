@@ -1,0 +1,10 @@
+{
+  "name": "campusops-prototype",
+  "version": "0.1.0",
+  "description": "Initial Node.js prototype for CampusOps facility complaint system",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "license": "MIT"
+}

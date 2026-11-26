@@ -1,0 +1,42 @@
+name: CI — Initial Build & Lint Check
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate package.json & JS syntax check
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8')); console.log('package.json is valid');"
+          find . -maxdepth 4 -type f -name "*.js" -not -path "./node_modules/*" -exec node --check {} +
+
+      - name: Smoke check prototype server
+        run: |
+          if [ -f "src/server.js" ]; then
+            PORT=3000 node src/server.js &
+            SERVER_PID=$!
+            sleep 2
+            kill -0 $SERVER_PID
+            kill $SERVER_PID
+            echo "Prototype server started cleanly."
+          else
+            echo "No src/server.js found yet; syntax check passed."
+          fi
